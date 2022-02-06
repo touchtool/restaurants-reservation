@@ -23,30 +23,35 @@ app = FastAPI()
 
 @app.get("/reservation/by-name/{name}")
 def get_reservation_by_name(name: str):
-    result = collection.find({"name": name})
-    my_result = [r for r in result]
-    return {
-        "result": my_result
-    }
+    result = collection.find_one({"name": name}, {"_id": 0})
+    if result != None:
+        return {
+            "status": "found",
+            "result": result
+        }
+    else:
+        raise HTTPException(404, f"Couldn't find menu with name: {name}'")
 
 
 @app.get("reservation/by-table/{table}")
 def get_reservation_by_table(table: int):
-    result = collection.find({"table_number": table})
-    my_result = [r for r in result]
-    return {
-        "result": my_result
-    }
+    result = collection.find_one({"table_number": table}, {"_id": 0})
+    if result != None:
+        return {
+            "status": "found",
+            "result": result
+        }
+    else:
+        raise HTTPException(404, f"Couldn't find menu with name: {table}'")
 
 
 @app.post("/reservation")
 def reserve(reservation: Reservation):
     res_encode = jsonable_encoder(reservation)
-    if reservation not in collection.find({"table_number": reservation["table_number"]}):
-        collection.insert_one(res_encode)
-        return {
-            "result": "done"
-        }
+    collection.insert_one(res_encode)
+    return {
+        "result": "done"
+    }
 
 
 @app.put("/reservation/update/")

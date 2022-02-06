@@ -67,20 +67,22 @@ def reserve(reservation: Reservation):
 
 @app.put("/reservation/update/")
 def update_reservation(reservation: Reservation):
-    find = collection.find_one({"time": reservation.time, "table_number": reservation.table_number}, {"_id": 0})
+    find = collection.find_one({"name": reservation.name, "table_number": reservation.table_number}, {"_id": 0})
     if find == None:
         return {
             "result": "Failed"
         }
     else:
-        new_value = {
-            "$set": {"name": reservation.name, "time": reservation.time, "table_number": reservation.table_number}}
-        collection.update_one(collection.find(), new_value)
-        res_encode = jsonable_encoder(reservation)
-        collection.update_one(res_encode)
-        return {
-            "result": "done"
-        }
+        check = collection.find_one({"time": reservation.time, "table_number": reservation.table_number}, {"_id": 0})
+        if check != None:
+            return {
+                "result": "Failed"
+            }
+        else:
+            collection.update_one({"name": reservation.name}, {"$set": jsonable_encoder(reservation)})
+            return {
+                "result": "done"
+            }
 
 
 @app.delete("/reservation/delete/{name}/{table_number}")

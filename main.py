@@ -47,7 +47,7 @@ def get_reservation_by_table(table: int):
 
 @app.post("/reservation")
 def reserve(reservation: Reservation):
-    find = collection.find_one({"time": reservation.time}, {"table_number": reservation.table_number})
+    find = collection.find_one({"time": reservation.time}, {"table_number": reservation.table_number}, {"_id": 0})
     if find != None:
         return {
             "result": "Failed"
@@ -67,7 +67,7 @@ def reserve(reservation: Reservation):
 
 @app.put("/reservation/update/")
 def update_reservation(reservation: Reservation):
-    find = collection.find_one({"time": reservation.time}, {"table_number": reservation.table_number})
+    find = collection.find_one({"time": reservation.time}, {"table_number": reservation.table_number}, {"_id": 0})
     if find == None:
         return {
             "result": "Failed"
@@ -85,7 +85,7 @@ def update_reservation(reservation: Reservation):
 
 @app.delete("/reservation/delete/{name}/{table_number}")
 def cancel_reservation(name: str, table_number: int):
-    find = collection.find_one({"name": name, "table_number": table_number})
+    find = collection.find_one({"name": name, "table_number": table_number}, {"_id": 0})
     if find == None:
         return {
             "result": "Failed"

@@ -33,7 +33,7 @@ def get_reservation_by_name(name: str):
         raise HTTPException(404, f"Couldn't find menu with name: {name}'")
 
 
-@app.get("reservation/by-table/{table}")
+@app.get("/reservation/by-table/{table}")
 def get_reservation_by_table(table: int):
     list_result = list(collection.find({"table_number": table}, {"_id": 0}))
     if len(list_result) != 0:
@@ -93,7 +93,7 @@ def cancel_reservation(name: str, table_number: int):
             "result": "Failed"
         }
     else:
-        collection.delete_one()
+        collection.delete_one({"name": name, "table_number": table_number})
         return {
             "result": "done"
         }

@@ -1,41 +1,54 @@
-from fastapi import FastAPI
 from pymongo import MongoClient
+
+from fastapi import FastAPI, HTTPException
 from pydantic import BaseModel
+from typing import Optional
+from fastapi.encoders import jsonable_encoder
+
 
 class Reservation(BaseModel):
-    name : str
+    name: str
     time: int
     table_number: int
-    
+
+
 client = MongoClient('mongodb://localhost', 27017)
 
-# TODO fill in database name
-db = client["<put your database name>"]
+db = client["touch_restaurant"]
 
-# TODO fill in collection name
-collection = db["<put your collection name>"]
+collection = db["reservation"]
 
 app = FastAPI()
 
 
-# TODO complete all endpoint.
 @app.get("/reservation/by-name/{name}")
-def get_reservation_by_name(name:str):
-    pass
+def get_reservation_by_name(name: str):
+    result = collection.find({"name": name})
+    my_result = [r for r in result]
+    return {
+        "result": my_result
+    }
+
 
 @app.get("reservation/by-table/{table}")
 def get_reservation_by_table(table: int):
-    pass
+    result = collection.find({"table_number": table})
+    my_result = [r for r in result]
+    return {
+        "result": my_result
+    }
 
-@app.post("/reservation")
-def reserve(reservation : Reservation):
-    pass
+
+# @app.post("/reservation")
+# def reserve(reservation: Reservation):
+#     if reservation["table_number"] in collection.find({"table_number": reservation["table_number"]})
+
 
 @app.put("/reservation/update/")
 def update_reservation(reservation: Reservation):
     pass
 
-@app.delete("/reservation/delete/{name}/{table_number}")
-def cancel_reservation(name: str, table_number : int):
-    pass
 
+@app.delete("/reservation/delete/{name}/{table_number}")
+def cancel_reservation(name: str, table_number: int):
+    pass

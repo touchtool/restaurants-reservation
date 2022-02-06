@@ -39,16 +39,29 @@ def get_reservation_by_table(table: int):
     }
 
 
-# @app.post("/reservation")
-# def reserve(reservation: Reservation):
-#     if reservation["table_number"] in collection.find({"table_number": reservation["table_number"]})
+@app.post("/reservation")
+def reserve(reservation: Reservation):
+    res_encode = jsonable_encoder(reservation)
+    if reservation not in collection.find({"table_number": reservation["table_number"]}):
+        collection.insert_one(res_encode)
+        return {
+            "result": "done"
+        }
 
 
 @app.put("/reservation/update/")
 def update_reservation(reservation: Reservation):
-    pass
+    res_encode = jsonable_encoder(reservation)
+    collection.update_one(res_encode)
+    return {
+        "result": "done"
+    }
 
 
 @app.delete("/reservation/delete/{name}/{table_number}")
 def cancel_reservation(name: str, table_number: int):
-    pass
+    result = collection.find({"name": name, "table_number": table_number})
+    collection.delete_one(result)
+    return {
+        "result": "done"
+    }

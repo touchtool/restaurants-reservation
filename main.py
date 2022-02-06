@@ -68,11 +68,7 @@ def reserve(reservation: Reservation):
 @app.put("/reservation/update/")
 def update_reservation(reservation: Reservation):
     find = collection.find_one({"time": reservation.time}, {"table_number": reservation.table_number})
-    if find != None:
-        return {
-            "result": "Failed"
-        }
-    elif find == None:
+    if find == None:
         return {
             "result": "Failed"
         }
